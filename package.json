@@ -1,0 +1,51 @@
+{
+  "name": "icecast-audio-player",
+  "version": "1.0.0",
+  "description": "Web-based Icecast audio player with metadata display and embed support",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint --fix",
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:player": "jest --testPathPattern=player",
+    "test:e2e": "playwright test",
+    "lighthouse": "lighthouse http://localhost:3000 --output json --output html",
+    "bundle-analyze": "ANALYZE=true npm run build"
+  },
+  "dependencies": {
+    "next": "^15.0.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.6.3",
+    "tailwindcss": "^3.4.14",
+    "@radix-ui/react-slider": "^1.2.1",
+    "@radix-ui/react-tooltip": "^1.1.4",
+    "@radix-ui/react-switch": "^1.1.1",
+    "lucide-react": "^0.469.0",
+    "next-seo": "^6.4.0",
+    "framer-motion": "^10.16.16",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.6",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^15.0.3",
+    "prettier": "^3.3.3",
+    "@playwright/test": "^1.40.1",
+    "jest": "^29.7.0",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/jest-dom": "^6.1.5",
+    "lighthouse": "^11.4.0",
+    "@next/bundle-analyzer": "^15.0.3",
+    "postcss": "^8.4.47",
+    "autoprefixer": "^10.4.20"
+  }
+}
