@@ -23,17 +23,26 @@ export class StreamManager {
    */
   initialize(): HTMLAudioElement {
     if (this.audio) {
+      console.log('[StreamManager] Returning existing audio element');
       return this.audio;
     }
 
+    console.log('[StreamManager] Initializing new audio element with URL:', this.config.url);
     this.audio = new Audio();
     this.audio.src = this.config.url;
     this.audio.preload = 'auto'; // Changed from 'none' to 'auto' for live streams
     this.audio.crossOrigin = 'anonymous';
 
+    console.log('[StreamManager] Audio element configured:', {
+      src: this.audio.src,
+      preload: this.audio.preload,
+      crossOrigin: this.audio.crossOrigin
+    });
+
     this.setupEventListeners();
 
     // Load the stream to establish connection
+    console.log('[StreamManager] Calling audio.load()');
     this.audio.load();
 
     return this.audio;
@@ -46,39 +55,66 @@ export class StreamManager {
     if (!this.audio) return;
 
     this.audio.addEventListener('loadstart', () => {
+      console.log('[StreamManager] Event: loadstart - Stream loading started');
       this.addEvent('buffering', 'Stream loading started');
     });
 
     this.audio.addEventListener('loadeddata', () => {
+      console.log('[StreamManager] Event: loadeddata - Stream loaded successfully');
       this.health.connected = true;
       this.health.lastSuccess = new Date();
       this.reconnectAttempts = 0;
       this.addEvent('connected', 'Stream loaded successfully');
     });
 
+    this.audio.addEventListener('canplay', () => {
+      console.log('[StreamManager] Event: canplay - Stream can start playing');
+    });
+
     this.audio.addEventListener('playing', () => {
+      console.log('[StreamManager] Event: playing - Stream is playing');
       this.addEvent('playing', 'Stream is playing');
     });
 
     this.audio.addEventListener('error', () => {
       const error = this.audio?.error;
+      console.error('[StreamManager] Event: error - Stream error:', error);
       if (error) {
+        console.error('[StreamManager] Error details:', {
+          code: error.code,
+          message: error.message,
+          MEDIA_ERR_ABORTED: error.code === MediaError.MEDIA_ERR_ABORTED,
+          MEDIA_ERR_NETWORK: error.code === MediaError.MEDIA_ERR_NETWORK,
+          MEDIA_ERR_DECODE: error.code === MediaError.MEDIA_ERR_DECODE,
+          MEDIA_ERR_SRC_NOT_SUPPORTED: error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED
+        });
         this.handleError(error);
         this.addEvent('error', `Stream error: ${error.message || 'Unknown error'}`);
       }
     });
 
     this.audio.addEventListener('stalled', () => {
+      console.warn('[StreamManager] Event: stalled - Stream stalled, buffering...');
       this.addEvent('buffering', 'Stream stalled, buffering...');
     });
 
     this.audio.addEventListener('waiting', () => {
+      console.log('[StreamManager] Event: waiting - Waiting for data...');
       this.addEvent('buffering', 'Waiting for data...');
     });
 
     this.audio.addEventListener('ended', () => {
+      console.log('[StreamManager] Event: ended - Stream ended');
       this.addEvent('disconnected', 'Stream ended');
       this.attemptReconnect();
+    });
+
+    this.audio.addEventListener('pause', () => {
+      console.log('[StreamManager] Event: pause - Stream paused');
+    });
+
+    this.audio.addEventListener('play', () => {
+      console.log('[StreamManager] Event: play - Play requested');
     });
   }
 

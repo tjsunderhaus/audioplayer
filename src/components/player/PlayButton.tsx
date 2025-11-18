@@ -14,11 +14,17 @@ export function PlayButton({ state, onToggle, size = 'icon' }: PlayButtonProps) 
   const isLoading = state === 'loading' || state === 'buffering';
   const isPlaying = state === 'playing';
 
+  const handleClick = () => {
+    console.log('[PlayButton] Button clicked! Current state:', state);
+    console.log('[PlayButton] Button disabled?', isLoading || state === 'error');
+    onToggle();
+  };
+
   return (
     <Button
       variant="default"
       size={size}
-      onClick={onToggle}
+      onClick={handleClick}
       disabled={isLoading || state === 'error'}
       aria-label={isPlaying ? 'Pause' : 'Play'}
       aria-pressed={isPlaying}

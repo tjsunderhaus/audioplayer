@@ -30,7 +30,15 @@ export function useAudioPlayer(stream: StreamConfig, config?: AudioPlayerConfig)
     // Event listeners
     const handleLoadStart = () => setState('loading');
     const handleCanPlay = () => {
-      if (state === 'loading') setState('paused');
+      // Use functional update to avoid stale closure
+      setState((currentState) => {
+        console.log('[useAudioPlayer] handleCanPlay - current state:', currentState);
+        // Only transition to paused if not already playing
+        if (currentState !== 'playing') {
+          return 'paused';
+        }
+        return currentState;
+      });
     };
     const handlePlaying = () => setState('playing');
     const handlePause = () => setState('paused');
@@ -86,13 +94,34 @@ export function useAudioPlayer(stream: StreamConfig, config?: AudioPlayerConfig)
   }, [muted]);
 
   const play = useCallback(async () => {
-    if (!audioRef.current) return;
+    if (!audioRef.current) {
+      console.error('[useAudioPlayer] audioRef.current is null!');
+      return;
+    }
+
+    console.log('[useAudioPlayer] Play function called');
+    console.log('[useAudioPlayer] Audio element state:', {
+      src: audioRef.current.src,
+      readyState: audioRef.current.readyState,
+      networkState: audioRef.current.networkState,
+      paused: audioRef.current.paused,
+      currentTime: audioRef.current.currentTime
+    });
 
     try {
       setState('loading');
-      await audioRef.current.play();
+      console.log('[useAudioPlayer] Calling audio.play()');
+      const playPromise = audioRef.current.play();
+      console.log('[useAudioPlayer] Play promise created:', playPromise);
+      await playPromise;
+      console.log('[useAudioPlayer] Play promise resolved successfully');
     } catch (error) {
-      console.error('Error playing audio:', error);
+      console.error('[useAudioPlayer] Error playing audio:', error);
+      console.error('[useAudioPlayer] Error details:', {
+        name: (error as Error).name,
+        message: (error as Error).message,
+        stack: (error as Error).stack
+      });
       setState('error');
     }
   }, []);
@@ -103,9 +132,12 @@ export function useAudioPlayer(stream: StreamConfig, config?: AudioPlayerConfig)
   }, []);
 
   const togglePlay = useCallback(() => {
+    console.log('[useAudioPlayer] togglePlay called, current state:', state);
     if (state === 'playing') {
+      console.log('[useAudioPlayer] State is playing, calling pause()');
       pause();
     } else {
+      console.log('[useAudioPlayer] State is not playing, calling play()');
       play();
     }
   }, [state, play, pause]);
