@@ -10,7 +10,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 
 # Install dependencies
-RUN npm ci --only=production --ignore-scripts
+RUN npm ci --only=production --ignore-scripts --legacy-peer-deps
 
 # Stage 2: Builder
 FROM node:20-alpine AS builder
@@ -24,7 +24,7 @@ COPY . .
 COPY package.json package-lock.json* ./
 
 # Install all dependencies (including dev)
-RUN npm ci --ignore-scripts
+RUN npm ci --ignore-scripts --legacy-peer-deps
 
 # Set environment for build
 ENV NEXT_TELEMETRY_DISABLED 1
