@@ -17,9 +17,8 @@ RUN npm ci --legacy-peer-deps
 # Copy source code
 COPY . .
 
-# Set environment for build
+# Set environment for build (don't set NODE_ENV yet - needed for devDeps)
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
 
 # Build the Next.js application
 RUN npm run build
