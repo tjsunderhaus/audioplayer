@@ -1,8 +1,12 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
+  output: 'standalone', // Required for Docker deployment
+  outputFileTracingRoot: path.join(__dirname, './'),
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
