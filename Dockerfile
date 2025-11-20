@@ -17,6 +17,9 @@ RUN npm ci --legacy-peer-deps
 # Copy source code
 COPY . .
 
+# Ensure public directory exists (create if missing)
+RUN mkdir -p public
+
 # Set environment for build (don't set NODE_ENV yet - needed for devDeps)
 ENV NEXT_TELEMETRY_DISABLED=1
 
