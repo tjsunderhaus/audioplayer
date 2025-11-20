@@ -16,15 +16,14 @@ RUN npm ci --only=production --ignore-scripts --legacy-peer-deps
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy dependencies from deps stage
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-
-# Copy package files for dev dependencies
+# Copy package files
 COPY package.json package-lock.json* ./
 
-# Install all dependencies (including dev)
+# Install ALL dependencies (including dev dependencies for build)
 RUN npm ci --ignore-scripts --legacy-peer-deps
+
+# Copy source code
+COPY . .
 
 # Set environment for build
 ENV NEXT_TELEMETRY_DISABLED 1
